@@ -14,16 +14,13 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.AbstractBindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
-import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -51,11 +48,14 @@ public class UserController {
 
 
     @GetMapping(path = "/get/{userID}", produces = {"application/json", "application/xml"})
+    @PreAuthorize("principal == #userID")
     public UserResponseDto getUserByID(@PathVariable String userID) throws UserAccountNotFound {
         return userService.findUserById(userID);
     }
 
+
     @GetMapping(path = "/{userID}", produces = {"application/json", "application/xml"})
+    @PreAuthorize("principal == #userID")
     public UserResponseDto getUserByIdAndAlbums(@PathVariable String userID) throws UserAccountNotFound {
 
         logger.info("Before calling Albums Microservice");
@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/albums/status")
-    public String testRestTemplate() {
+    public String testFeignClient() {
         return albumsServiceClient.getStatus();
     }
 
@@ -95,6 +95,7 @@ public class UserController {
 
 
     @DeleteMapping(path ="/delete/{email}", consumes = {"application/json", "application/xml"}, produces = {"application/json", "application/xml"})
+    @PreAuthorize("hasAuthority('DELETE_AUTHORITY')")
     public String deleteUser(@PathVariable String email) throws UserAccountNotFound {
         userService.deleteUser(email);
         return "User " + email + " has just been deleted...";
