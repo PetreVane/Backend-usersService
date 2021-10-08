@@ -2,15 +2,12 @@ package com.orbsec.photobackendusersapi.rest;
 
 import com.orbsec.photobackendusersapi.domain.models.AlbumResponseDto;
 import com.orbsec.photobackendusersapi.domain.models.CreateUserDto;
-import com.orbsec.photobackendusersapi.domain.models.User;
 import com.orbsec.photobackendusersapi.domain.models.UserResponseDto;
 import com.orbsec.photobackendusersapi.exceptions.UserAccountNotFound;
 import com.orbsec.photobackendusersapi.exceptions.UserNotRegistered;
 import com.orbsec.photobackendusersapi.services.AlbumsServiceClient;
 import com.orbsec.photobackendusersapi.services.UserService;
-import feign.FeignException;
 import lombok.var;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +16,9 @@ import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.AbstractBindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/users")
@@ -72,6 +69,7 @@ public class UserController {
     }
 
     @GetMapping(produces = {"application/json", "application/xml"})
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDto> getAllUsers() {
         return userService.findAll();
     }
@@ -95,7 +93,6 @@ public class UserController {
 
 
     @DeleteMapping(path ="/delete/{email}", consumes = {"application/json", "application/xml"}, produces = {"application/json", "application/xml"})
-    @PreAuthorize("hasAuthority('DELETE_AUTHORITY')")
     public String deleteUser(@PathVariable String email) throws UserAccountNotFound {
         userService.deleteUser(email);
         return "User " + email + " has just been deleted...";
