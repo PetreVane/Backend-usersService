@@ -1,4 +1,4 @@
-package com.orbsec.photobackendusersapi.rest;
+package com.orbsec.photobackendusersapi.controller;
 
 import com.orbsec.photobackendusersapi.domain.models.AlbumResponseDto;
 import com.orbsec.photobackendusersapi.domain.models.CreateUserDto;
