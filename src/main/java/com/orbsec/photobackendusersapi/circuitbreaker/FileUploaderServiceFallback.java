@@ -29,7 +29,7 @@ public class FileUploaderServiceFallback implements FileUploaderClient {
     }
 
     @Override
-    public ResponseEntity<ResponseMessage> uploadFiles(MultipartFile files) {
+    public ResponseEntity<ResponseMessage> uploadFiles(MultipartFile[] files) {
         getErrorMessage();
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(null);
     }

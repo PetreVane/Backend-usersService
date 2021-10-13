@@ -17,7 +17,7 @@ public interface FileUploaderClient {
     String getStatus();
 
     @PostMapping("/upload")
-    ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile files);
+    ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files);
 
     @GetMapping("/files")
     ResponseEntity<List<ResponseFile>> getAllFiles();

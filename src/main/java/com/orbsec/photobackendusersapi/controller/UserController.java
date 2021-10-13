@@ -1,10 +1,12 @@
 package com.orbsec.photobackendusersapi.controller;
 
 import com.orbsec.photobackendusersapi.dto.CreateUserDto;
+import com.orbsec.photobackendusersapi.dto.ResponseMessage;
 import com.orbsec.photobackendusersapi.dto.UserResponseDto;
 import com.orbsec.photobackendusersapi.exceptions.UserAccountNotFound;
 import com.orbsec.photobackendusersapi.exceptions.UserNotRegistered;
 import com.orbsec.photobackendusersapi.services.AlbumsServiceClient;
+import com.orbsec.photobackendusersapi.services.FileUploaderClient;
 import com.orbsec.photobackendusersapi.services.UserService;
 import lombok.var;
 import org.slf4j.Logger;
@@ -15,6 +17,8 @@ import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.AbstractBindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.Valid;
 import java.util.List;
 
@@ -25,14 +29,14 @@ public class UserController {
 
     private Environment environment;
     private UserService userService;
-    private AlbumsServiceClient albumsServiceClient;
+    private FileUploaderClient fileUploader;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public UserController(Environment environment, UserService userService, AlbumsServiceClient albumsServiceClient) {
+    public UserController(Environment environment, UserService userService, FileUploaderClient fileUploader) {
         this.environment = environment;
         this.userService = userService;
-        this.albumsServiceClient = albumsServiceClient;
+        this.fileUploader = fileUploader;
     }
 
     @GetMapping("/status")
@@ -78,21 +82,40 @@ public class UserController {
         return "User " + email + " has just been deleted...";
     }
 
+//    FileUploader-Microservice
+    @GetMapping("/uploader/status")
+    public String fileUploaderGetStatus() {
+        logger.info("Call to fileUploader -> getStatus() service ");
+        return fileUploader.getStatus();
+    }
 
-    //    @GetMapping(path = "/{userID}", produces = {"application/json", "application/xml"})
-//    @PreAuthorize("principal == #userID")
-//    public UserResponseDto getUserByIdAndAlbums(@PathVariable String userID) throws UserAccountNotFound {
-//
-//        logger.info("Before calling Albums Microservice");
-//        List<AlbumResponseDto> actualList = albumsServiceClient.findAllAlbums();
-//        logger.info("After calling Albums Microservice");
-//        var user = userService.findUserById(userID);
-//        user.setAlbums(actualList);
-//        return user;
-//    }
 
-//    @GetMapping(path = "/albums/status")
-//    public String testFeignClient() {
-//        return albumsServiceClient.getStatus();
-//    }
+    @PostMapping("/uploader/upload")
+    @PreAuthorize("principal == #userID")
+    public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+        logger.info("Call to fileUploader -> uploadFiles() service ");
+        return fileUploader.uploadFiles(files);
+    }
+
+    @GetMapping("/uploader/files/{fileName}")
+    @PreAuthorize("principal == #userID")
+    public ResponseEntity<byte[]> getFileByName(@PathVariable String fileName) {
+        logger.info("Call to fileUploader -> getFileByName() service ");
+        return fileUploader.getFileByName(fileName);
+    }
+
+    @DeleteMapping("/uploader/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<String>> deleteAllFiles() {
+        logger.info("Call to fileUploader -> deleteAllFiles() service ");
+        return fileUploader.deleteAllFiles();
+    }
+
+    @DeleteMapping("/uploader/delete/{fileName}")
+    @PreAuthorize("principal == #userID")
+    public ResponseEntity<String> deleteFileByName(@PathVariable String fileName) {
+        logger.info("Call to fileUploader -> deleteFileByName() service ");
+        return fileUploader.deleteFileByName(fileName);
+    }
+
 }
