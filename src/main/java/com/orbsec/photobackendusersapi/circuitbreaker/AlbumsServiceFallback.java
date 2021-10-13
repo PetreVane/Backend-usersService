@@ -1,6 +1,6 @@
 package com.orbsec.photobackendusersapi.circuitbreaker;
 
-import com.orbsec.photobackendusersapi.domain.models.AlbumResponseDto;
+import com.orbsec.photobackendusersapi.dto.AlbumResponseDto;
 import com.orbsec.photobackendusersapi.services.AlbumsServiceClient;
 import feign.FeignException;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import java.util.List;
 public class AlbumsServiceFallback implements AlbumsServiceClient {
 
     private final Throwable cause;
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public AlbumsServiceFallback(Throwable cause) {
         this.cause = cause;

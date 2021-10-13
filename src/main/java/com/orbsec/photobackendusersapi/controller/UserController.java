@@ -1,8 +1,7 @@
 package com.orbsec.photobackendusersapi.controller;
 
-import com.orbsec.photobackendusersapi.domain.models.AlbumResponseDto;
-import com.orbsec.photobackendusersapi.domain.models.CreateUserDto;
-import com.orbsec.photobackendusersapi.domain.models.UserResponseDto;
+import com.orbsec.photobackendusersapi.dto.CreateUserDto;
+import com.orbsec.photobackendusersapi.dto.UserResponseDto;
 import com.orbsec.photobackendusersapi.exceptions.UserAccountNotFound;
 import com.orbsec.photobackendusersapi.exceptions.UserNotRegistered;
 import com.orbsec.photobackendusersapi.services.AlbumsServiceClient;
@@ -43,29 +42,10 @@ public class UserController {
         return "Users microservice is up and running on port " + portNumber + " and secret token " + secretToken;
     }
 
-
     @GetMapping(path = "/get/{userID}", produces = {"application/json", "application/xml"})
     @PreAuthorize("principal == #userID")
     public UserResponseDto getUserByID(@PathVariable String userID) throws UserAccountNotFound {
         return userService.findUserById(userID);
-    }
-
-
-    @GetMapping(path = "/{userID}", produces = {"application/json", "application/xml"})
-    @PreAuthorize("principal == #userID")
-    public UserResponseDto getUserByIdAndAlbums(@PathVariable String userID) throws UserAccountNotFound {
-
-        logger.info("Before calling Albums Microservice");
-        List<AlbumResponseDto> actualList = albumsServiceClient.findAllAlbums();
-        logger.info("After calling Albums Microservice");
-        var user = userService.findUserById(userID);
-        user.setAlbums(actualList);
-        return user;
-    }
-
-    @GetMapping(path = "/albums/status")
-    public String testFeignClient() {
-        return albumsServiceClient.getStatus();
     }
 
     @GetMapping(produces = {"application/json", "application/xml"})
@@ -98,4 +78,21 @@ public class UserController {
         return "User " + email + " has just been deleted...";
     }
 
+
+    //    @GetMapping(path = "/{userID}", produces = {"application/json", "application/xml"})
+//    @PreAuthorize("principal == #userID")
+//    public UserResponseDto getUserByIdAndAlbums(@PathVariable String userID) throws UserAccountNotFound {
+//
+//        logger.info("Before calling Albums Microservice");
+//        List<AlbumResponseDto> actualList = albumsServiceClient.findAllAlbums();
+//        logger.info("After calling Albums Microservice");
+//        var user = userService.findUserById(userID);
+//        user.setAlbums(actualList);
+//        return user;
+//    }
+
+//    @GetMapping(path = "/albums/status")
+//    public String testFeignClient() {
+//        return albumsServiceClient.getStatus();
+//    }
 }

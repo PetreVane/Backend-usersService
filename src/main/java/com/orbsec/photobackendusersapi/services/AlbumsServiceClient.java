@@ -1,6 +1,6 @@
 package com.orbsec.photobackendusersapi.services;
 
-import com.orbsec.photobackendusersapi.domain.models.AlbumResponseDto;
+import com.orbsec.photobackendusersapi.dto.AlbumResponseDto;
 import com.orbsec.photobackendusersapi.circuitbreaker.AlbumsFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,6 @@
-package com.orbsec.photobackendusersapi.domain.models;
+package com.orbsec.photobackendusersapi.dto;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.*;
 import java.util.UUID;

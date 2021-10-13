@@ -1,7 +1,8 @@
 package com.orbsec.photobackendusersapi.services;
 
-import com.orbsec.photobackendusersapi.message.ResponseFile;
-import com.orbsec.photobackendusersapi.message.ResponseMessage;
+import com.orbsec.photobackendusersapi.circuitbreaker.FileUploaderFallbackFactory;
+import com.orbsec.photobackendusersapi.dto.ResponseFile;
+import com.orbsec.photobackendusersapi.dto.ResponseMessage;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "fileUploader-ms")
+@FeignClient(name = "fileUploader-ms", fallbackFactory = FileUploaderFallbackFactory.class)
 public interface FileUploaderClient {
 
     @GetMapping("/status")

@@ -1,4 +1,4 @@
-package com.orbsec.photobackendusersapi.message;
+package com.orbsec.photobackendusersapi.dto;
 
 import lombok.Data;
 

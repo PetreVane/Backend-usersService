@@ -1,4 +1,4 @@
-package com.orbsec.photobackendusersapi.domain.models;
+package com.orbsec.photobackendusersapi.dto;
 
 import lombok.Data;
 
