@@ -3,6 +3,7 @@ package com.orbsec.photobackendusersapi.controller;
 import com.orbsec.photobackendusersapi.dto.CreateUserDto;
 import com.orbsec.photobackendusersapi.dto.ResponseMessage;
 import com.orbsec.photobackendusersapi.dto.UserResponseDto;
+import com.orbsec.photobackendusersapi.exceptions.TokenExpiredException;
 import com.orbsec.photobackendusersapi.exceptions.UserAccountNotFound;
 import com.orbsec.photobackendusersapi.exceptions.UserNotRegistered;
 import com.orbsec.photobackendusersapi.services.AlbumsServiceClient;
@@ -24,13 +25,13 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api")
 public class UserController {
 
-    private Environment environment;
-    private UserService userService;
-    private FileUploaderClient fileUploader;
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Environment environment;
+    private final UserService userService;
+    private final FileUploaderClient fileUploader;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public UserController(Environment environment, UserService userService, FileUploaderClient fileUploader) {
@@ -39,21 +40,18 @@ public class UserController {
         this.fileUploader = fileUploader;
     }
 
-    @GetMapping("/status")
+    @GetMapping("/users/status")
     public String getStatus() {
-        var secretToken = environment.getProperty("token.secret");
         var portNumber = environment.getProperty("local.server.port");
-        return "Users microservice is up and running on port " + portNumber + " and secret token " + secretToken;
+        return "Users microservice is up and running on port " + portNumber;
     }
 
-    @GetMapping(path = "/get/{userID}", produces = {"application/json", "application/xml"})
-    @PreAuthorize("principal == #userID")
+    @GetMapping(path = "/users/{userID}", produces = {"application/json", "application/xml"})
     public UserResponseDto getUserByID(@PathVariable String userID) throws UserAccountNotFound {
         return userService.findUserById(userID);
     }
 
-    @GetMapping(produces = {"application/json", "application/xml"})
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(path = "/users", produces = {"application/json", "application/xml"})
     public List<UserResponseDto> getAllUsers() {
         return userService.findAll();
     }
@@ -91,14 +89,12 @@ public class UserController {
 
 
     @PostMapping("/uploader/upload")
-    @PreAuthorize("principal == #userID")
     public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
         logger.info("Call to fileUploader -> uploadFiles() service ");
         return fileUploader.uploadFiles(files);
     }
 
     @GetMapping("/uploader/files/{fileName}")
-    @PreAuthorize("principal == #userID")
     public ResponseEntity<byte[]> getFileByName(@PathVariable String fileName) {
         logger.info("Call to fileUploader -> getFileByName() service ");
         return fileUploader.getFileByName(fileName);
@@ -112,7 +108,6 @@ public class UserController {
     }
 
     @DeleteMapping("/uploader/delete/{fileName}")
-    @PreAuthorize("principal == #userID")
     public ResponseEntity<String> deleteFileByName(@PathVariable String fileName) {
         logger.info("Call to fileUploader -> deleteFileByName() service ");
         return fileUploader.deleteFileByName(fileName);

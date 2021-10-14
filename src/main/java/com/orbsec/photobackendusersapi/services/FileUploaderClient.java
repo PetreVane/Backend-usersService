@@ -13,21 +13,21 @@ import java.util.List;
 @FeignClient(name = "fileUploader-ms", fallbackFactory = FileUploaderFallbackFactory.class)
 public interface FileUploaderClient {
 
-    @GetMapping("/status")
+    @GetMapping("/api/status")
     String getStatus();
 
-    @PostMapping("/upload")
+    @PostMapping("/api/upload")
     ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files);
 
-    @GetMapping("/files")
+    @GetMapping("/api/files")
     ResponseEntity<List<ResponseFile>> getAllFiles();
 
-    @GetMapping("/files/{fileName}")
+    @GetMapping("/api/files/{fileName}")
     ResponseEntity<byte[]> getFileByName(@PathVariable String fileName);
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/api/delete")
     ResponseEntity<List<String>> deleteAllFiles();
 
-    @DeleteMapping("/delete/{fileName}")
+    @DeleteMapping("/api/delete/{fileName}")
     ResponseEntity<String> deleteFileByName(@PathVariable String fileName);
 }

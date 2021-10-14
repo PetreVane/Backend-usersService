@@ -21,7 +21,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private final Environment environment;
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final String USERS_ENDPOINT = "/users";
+    private final String USERS_ENDPOINT = "/api/users";
 
     @Autowired
     public WebSecurity(Environment environment, UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
