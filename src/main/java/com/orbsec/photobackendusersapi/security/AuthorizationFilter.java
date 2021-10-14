@@ -1,5 +1,7 @@
 package com.orbsec.photobackendusersapi.security;
 
+import com.orbsec.photobackendusersapi.exceptions.TokenExpiredException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,19 +42,24 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(req, res);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) throws TokenExpiredException {
         String authorizationHeader = req.getHeader("Authorization");
+        String userId;
 
         if (authorizationHeader == null) { return null; }
 
         final String emptyString  = "";
         String token = authorizationHeader.replace("Bearer", emptyString);
 
-        String userId = Jwts.parser()
-                .setSigningKey(environment.getProperty("token.secret"))
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+             userId = Jwts.parser()
+                    .setSigningKey(environment.getProperty("token.secret"))
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException(e.getHeader(), e.getClaims(), e.getLocalizedMessage());
+        }
 
         if (userId == null) {
             return null;

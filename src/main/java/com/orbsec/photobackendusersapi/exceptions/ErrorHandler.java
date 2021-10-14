@@ -1,15 +1,14 @@
 package com.orbsec.photobackendusersapi.exceptions;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.var;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.UnknownHostException;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler(UserNotRegistered.class)
@@ -40,6 +39,15 @@ public class ErrorHandler {
         error.setStatusCode(HttpStatus.NOT_FOUND.value());
         error.setTimestamp(System.currentTimeMillis());
         return error;
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<CustomError> handleExpiredToken (TokenExpiredException exception) {
+        var error = new CustomError();
+        error.setErrorMessage(exception.getMessage());
+        error.setStatusCode(HttpStatus.EXPECTATION_FAILED.value());
+        error.setTimestamp(System.currentTimeMillis());
+        return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
     }
 
 }
