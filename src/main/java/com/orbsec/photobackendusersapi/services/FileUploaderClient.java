@@ -30,4 +30,7 @@ public interface FileUploaderClient {
 
     @DeleteMapping("/api/delete/{fileName}")
     ResponseEntity<String> deleteFileByName(@PathVariable String fileName);
+
+    @GetMapping("/test/{message}")
+    public ResponseEntity<String> testStatus(@PathVariable String message);
 }

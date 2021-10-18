@@ -58,6 +58,12 @@ public class FileUploaderServiceFallback implements FileUploaderClient {
         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(null);
     }
 
+    @Override
+    public ResponseEntity<String> testStatus(String message) {
+        getErrorMessage();
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(null);
+    }
+
     private void getErrorMessage() {
         String errorMessage;
         logger.error("This is the fallback method --> File Uploader micro-service is not available yet!");

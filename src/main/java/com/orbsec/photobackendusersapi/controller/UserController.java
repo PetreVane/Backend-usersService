@@ -20,8 +20,13 @@ import org.springframework.validation.AbstractBindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
+
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 
 @RestController
@@ -88,7 +93,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/uploader/upload")
+    @PostMapping(path = "/uploader/upload", consumes = {MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files) {
         logger.info("Call to fileUploader -> uploadFiles() service ");
         return fileUploader.uploadFiles(files);
@@ -111,6 +116,12 @@ public class UserController {
     public ResponseEntity<String> deleteFileByName(@PathVariable String fileName) {
         logger.info("Call to fileUploader -> deleteFileByName() service ");
         return fileUploader.deleteFileByName(fileName);
+    }
+
+    @GetMapping(path = "/uploader/test/{message}")
+    public ResponseEntity<String> testStatus(@PathVariable String message) {
+        logger.info("Called FileUploader Test Endpoint from user-ms");
+        return fileUploader.testStatus(message);
     }
 
 }
